@@ -27,14 +27,13 @@ let productionRecords = [
 		actualQty: 790,
 	},
 ];
+const PORT = process.env.PORT || 3000;
 
 app.get("/api/health", (req, res) => {
 	res.json({
 		message: "Backend running correctly",
 	});
 });
-
-const PORT = process.env.PORT || 3000;
 
 app.get("/api/production-records", (req, res) => {
 	res.json(productionRecords);
