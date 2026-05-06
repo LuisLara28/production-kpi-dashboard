@@ -1,40 +1,49 @@
 function ProductionTable({ records }) {
 	return (
 		<div>
-			<table
-				border="1"
-				cellPadding="8"
-			>
-				<thead>
-					<tr>
-						<th>Date</th>
-						<th>Shift</th>
-						<th>Line</th>
-						<th>Product</th>
-						<th>Planned Qty</th>
-						<th>Actual Qty</th>
-						<th>Compliance %</th>
-					</tr>
-				</thead>
+			<h2 className="text-2xl font-semibold text-gray-800 mb-6">Production Records</h2>
+			<div className="overflow-x-auto">
+				<table
+					border="1"
+					cellPadding="8"
+					className="w-full border-collapse"
+				>
+					<thead>
+						<tr className="bg-gray-200 text-gray-700">
+							<th className="p-3 text-left">Date</th>
+							<th className="p-3 text-left">Shift</th>
+							<th className="p-3 text-left">Line</th>
+							<th className="p-3 text-left">Product</th>
+							<th className="p-3 text-left">Planned Qty</th>
+							<th className="p-3 text-left">Actual Qty</th>
+							<th className="p-3 text-left">Compliance %</th>
+						</tr>
+					</thead>
 
-				<tbody>
-					{records.map((record) => {
-						const compliance = ((record.actualQty / record.plannedQty) * 100).toFixed(1);
+					<tbody>
+						{records.map((record) => {
+							const compliance = ((record.actualQty / record.plannedQty) * 100).toFixed(1);
 
-						return (
-							<tr key={record.id}>
-								<td>{record.date}</td>
-								<td>{record.shift}</td>
-								<td>{record.line}</td>
-								<td>{record.product}</td>
-								<td>{record.plannedQty}</td>
-								<td>{record.actualQty}</td>
-								<td>{compliance}%</td>
-							</tr>
-						);
-					})}
-				</tbody>
-			</table>
+							return (
+								<tr
+									key={record.id}
+									className="border-b border-gray-200 hover:bg-gray-50"
+								>
+									<td className="p-3">{record.date}</td>
+									<td className="p-3">{record.shift}</td>
+									<td className="p-3">{record.line}</td>
+									<td className="p-3">{record.product}</td>
+									<td className="p-3">{record.plannedQty}</td>
+									<td className="p-3">{record.actualQty}</td>
+									<td className={`p-3 font-semibold ${compliance >= 90 ? "text-green-600" : "text-red-600"}`}>
+										{compliance}%
+									</td>
+								</tr>
+							);
+						})}
+					</tbody>
+				</table>
+			</div>
 		</div>
 	);
 }

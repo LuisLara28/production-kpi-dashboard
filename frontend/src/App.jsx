@@ -4,6 +4,10 @@ import axios from "axios";
 import ProductionForm from "./components/productionForm";
 import ProductionTable from "./components/productionTable";
 
+import KPICards from "./components/KPICards";
+
+import "./index.css";
+
 function App() {
 	const [records, setRecords] = useState([]);
 	const [formData, setFormData] = useState({
@@ -59,13 +63,19 @@ function App() {
 	};
 
 	return (
-		<div>
-			<ProductionForm
-				formData={formData}
-				handleSubmit={handleSubmit}
-				handleChange={handleChange}
-			/>
-			<ProductionTable records={records} />
+		<div className="min-h-screen bg-gray-100 p-6">
+			<div className="max-w-7xl mx-auto">
+				<h1 className="text-4xl font-bold text-gray-800 mb-8">Production KPI Dashboard</h1>
+				<KPICards records={records} />
+				<ProductionForm
+					formData={formData}
+					handleSubmit={handleSubmit}
+					handleChange={handleChange}
+				/>
+			</div>
+			<div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
+				<ProductionTable records={records} />
+			</div>
 		</div>
 	);
 }
