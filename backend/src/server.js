@@ -40,7 +40,7 @@ app.get("/api/production-records", (req, res) => {
 });
 
 app.post("/api/production-records", (req, res) => {
-	const { date, shift, line, product, plannedQty, actualQty } = productionRecords;
+	const { date, shift, line, product, plannedQty, actualQty } = req.body;
 
 	const newRecord = {
 		id: productionRecords.length + 1,
