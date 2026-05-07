@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model ProductionRecord {
+  id          Int      @id @default(autoincrement())
+  date        String
+  shift       String
+  line        String
+  product     String
+  plannedQty  Int
+  actualQty   Int
+  createdAt   DateTime @default(now())
+}

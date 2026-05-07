@@ -6,6 +6,10 @@ import ProductionTable from "./components/productionTable";
 
 import KPICards from "./components/KPICards";
 
+import ProductionChart from "./components/ProductionChart";
+
+import ProductionFilters from "./components/ProductionFilters";
+
 import "./index.css";
 
 function App() {
@@ -18,21 +22,37 @@ function App() {
 		plannedQty: "",
 		actualQty: "",
 	});
+	const [filters, setFilters] = useState({
+		line: "",
+		shift: "",
+	});
 
 	useEffect(() => {
-		axios
-			.get("http://localhost:3000/api/production-records")
-			.then((res) => {
-				setRecords(res.data);
-			})
-			.catch((err) => {
-				console.error("Error fetching production records:", err);
-			});
-	}, []);
+		const fetchRecords = async () => {
+			try {
+				const response = await axios.get("http://localhost:3000/api/production-records", {
+					params: filters,
+				});
+
+				setRecords(response.data);
+			} catch (error) {
+				console.error("Error fetching production records:", error);
+			}
+		};
+
+		fetchRecords();
+	}, [filters]);
 
 	const handleChange = (e) => {
 		setFormData({
 			...formData,
+			[e.target.name]: e.target.value,
+		});
+	};
+
+	const handleFilterChange = (e) => {
+		setFilters({
+			...filters,
 			[e.target.name]: e.target.value,
 		});
 	};
@@ -67,6 +87,13 @@ function App() {
 			<div className="max-w-7xl mx-auto">
 				<h1 className="text-4xl font-bold text-gray-800 mb-8">Production KPI Dashboard</h1>
 				<KPICards records={records} />
+				<ProductionFilters
+					filters={filters}
+					handleFilterChange={handleFilterChange}
+				/>
+				<div className="bg-white rounded-xl shadow-md p-6 mb-8">
+					<ProductionChart records={records} />
+				</div>
 				<ProductionForm
 					formData={formData}
 					handleSubmit={handleSubmit}

@@ -10,6 +10,10 @@ function KPICards({ records }) {
 				<h3 className="text-gray-500 text-sm mb-2">Total Planned</h3>
 				<p className="text-3xl font-bold text-gray-800">{totalPlanned}</p>
 			</div>
+			<div className="bg-white rounded-xl shadow-md p-6">
+				<h3 className="text-gray-500 text-sm mb-2">Total Actual</h3>
+				<p className="text-3xl font-bold text-gray-800">{totalActual}</p>
+			</div>
 
 			<div className="bg-white rounded-xl shadow-md p-6">
 				<h3 className="text-gray-500 text-sm mb-2">Overall Compliance</h3>
