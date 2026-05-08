@@ -82,6 +82,16 @@ function App() {
 		}
 	};
 
+	const handleDelete = async (id) => {
+		try {
+			await axios.delete(`http://localhost:3000/api/production-records/${id}`);
+
+			setRecords(records.filter((record) => record.id !== id));
+		} catch (error) {
+			console.error("Error deleting production record:", error);
+		}
+	};
+
 	return (
 		<div className="min-h-screen bg-gray-100 p-6">
 			<div className="max-w-7xl mx-auto">
@@ -101,7 +111,10 @@ function App() {
 				/>
 			</div>
 			<div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
-				<ProductionTable records={records} />
+				<ProductionTable
+					records={records}
+					handleDelete={handleDelete}
+				/>
 			</div>
 		</div>
 	);

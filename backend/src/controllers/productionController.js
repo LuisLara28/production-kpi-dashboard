@@ -49,7 +49,30 @@ const createProductionRecord = async (req, res) => {
 	}
 };
 
+const deleteProductionRecord = async (req, res) => {
+	const { id } = req.params;
+
+	try {
+		await prisma.productionRecord.delete({
+			where: {
+				id: Number(id),
+			},
+		});
+
+		res.json({
+			message: "Production record deleted successfully",
+		});
+	} catch (error) {
+		console.error(error);
+
+		res.status(500).json({
+			error: "Failed to delete production record",
+		});
+	}
+};
+
 module.exports = {
 	getProductionRecords,
 	createProductionRecord,
+	deleteProductionRecord,
 };

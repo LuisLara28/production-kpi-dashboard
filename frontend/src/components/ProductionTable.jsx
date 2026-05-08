@@ -1,4 +1,4 @@
-function ProductionTable({ records }) {
+function ProductionTable({ records, handleDelete }) {
 	return (
 		<div>
 			<h2 className="text-2xl font-semibold text-gray-800 mb-6">Production Records</h2>
@@ -17,6 +17,7 @@ function ProductionTable({ records }) {
 							<th className="p-3 text-left">Planned Qty</th>
 							<th className="p-3 text-left">Actual Qty</th>
 							<th className="p-3 text-left">Compliance %</th>
+							<th className="p-3 text-left">Actions</th>
 						</tr>
 					</thead>
 
@@ -37,6 +38,14 @@ function ProductionTable({ records }) {
 									<td className="p-3">{record.actualQty}</td>
 									<td className={`p-3 font-semibold ${compliance >= 90 ? "text-green-600" : "text-red-600"}`}>
 										{compliance}%
+									</td>
+									<td className="p-3">
+										<button
+											onClick={() => handleDelete(record.id)}
+											className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm transition"
+										>
+											Delete
+										</button>
 									</td>
 								</tr>
 							);
