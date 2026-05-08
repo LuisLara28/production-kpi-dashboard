@@ -83,6 +83,11 @@ function App() {
 	};
 
 	const handleDelete = async (id) => {
+		const confirmed = window.confirm("Are you sure you want to delete this production record?");
+
+		if (!confirmed) {
+			return;
+		}
 		try {
 			await axios.delete(`http://localhost:3000/api/production-records/${id}`);
 
