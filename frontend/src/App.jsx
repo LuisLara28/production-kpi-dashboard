@@ -26,6 +26,7 @@ function App() {
 		line: "",
 		shift: "",
 	});
+	const [editingRecord, setEditingRecord] = useState(null);
 
 	useEffect(() => {
 		const fetchRecords = async () => {
@@ -60,14 +61,34 @@ function App() {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
+		if (formData.plannedQty <= 0) {
+			alert("Planned quantity must be greater than 0");
+			return;
+		}
+
+		if (formData.actualQty < 0) {
+			alert("Actual quantity cannot be negative");
+			return;
+		}
+
 		try {
-			const response = await axios.post("http://localhost:3000/api/production-records", {
+			const payload = {
 				...formData,
 				plannedQty: Number(formData.plannedQty),
 				actualQty: Number(formData.actualQty),
-			});
+			};
 
-			setRecords([...records, response.data]);
+			if (editingRecord) {
+				const response = await axios.put(`http://localhost:3000/api/production-records/${editingRecord.id}`, payload);
+
+				setRecords(records.map((record) => (record.id === editingRecord.id ? response.data : record)));
+
+				setEditingRecord(null);
+			} else {
+				const response = await axios.post("http://localhost:3000/api/production-records", payload);
+
+				setRecords([...records, response.data]);
+			}
 
 			setFormData({
 				date: "",
@@ -78,7 +99,7 @@ function App() {
 				actualQty: "",
 			});
 		} catch (error) {
-			console.error("Error creating record:", error);
+			console.error("Error saving production record:", error);
 		}
 	};
 
@@ -95,6 +116,19 @@ function App() {
 		} catch (error) {
 			console.error("Error deleting production record:", error);
 		}
+	};
+
+	const handleEdit = (record) => {
+		setEditingRecord(record);
+
+		setFormData({
+			date: record.date,
+			shift: record.shift,
+			line: record.line,
+			product: record.product,
+			plannedQty: record.plannedQty,
+			actualQty: record.actualQty,
+		});
 	};
 
 	return (
@@ -119,6 +153,7 @@ function App() {
 				<ProductionTable
 					records={records}
 					handleDelete={handleDelete}
+					handleEdit={handleEdit}
 				/>
 			</div>
 		</div>

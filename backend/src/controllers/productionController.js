@@ -29,6 +29,17 @@ const getProductionRecords = async (req, res) => {
 
 const createProductionRecord = async (req, res) => {
 	const { date, shift, line, product, plannedQty, actualQty } = req.body;
+	if (plannedQty <= 0) {
+		return res.status(400).json({
+			error: "Planned quantity must be greater than 0",
+		});
+	}
+
+	if (actualQty < 0) {
+		return res.status(400).json({
+			error: "Actual quantity cannot be negative",
+		});
+	}
 
 	try {
 		const newRecord = await prisma.productionRecord.create({
@@ -71,8 +82,50 @@ const deleteProductionRecord = async (req, res) => {
 	}
 };
 
+const updateProductionRecord = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const { date, shift, line, product, plannedQty, actualQty } = req.body;
+
+		if (plannedQty <= 0) {
+			return res.status(400).json({
+				error: "Planned quantity must be greater than 0",
+			});
+		}
+
+		if (actualQty < 0) {
+			return res.status(400).json({
+				error: "Actual quantity cannot be negative",
+			});
+		}
+
+		const updateRecord = await prisma.productionRecord.update({
+			where: {
+				id: Number(id),
+			},
+			data: {
+				date,
+				shift,
+				line,
+				product,
+				plannedQty,
+				actualQty,
+			},
+		});
+
+		res.json(updateRecord);
+	} catch (error) {
+		console.error(error);
+
+		res.status(500).json({
+			error: "Failed to update production record",
+		});
+	}
+};
+
 module.exports = {
 	getProductionRecords,
 	createProductionRecord,
 	deleteProductionRecord,
+	updateProductionRecord,
 };
