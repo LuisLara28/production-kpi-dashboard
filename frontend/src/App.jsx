@@ -27,10 +27,15 @@ function App() {
 		shift: "",
 	});
 	const [editingRecord, setEditingRecord] = useState(null);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState("");
 
 	useEffect(() => {
 		const fetchRecords = async () => {
 			try {
+				setIsLoading(true);
+				setError("");
+
 				const response = await axios.get("http://localhost:3000/api/production-records", {
 					params: filters,
 				});
@@ -38,6 +43,9 @@ function App() {
 				setRecords(response.data);
 			} catch (error) {
 				console.error("Error fetching production records:", error);
+				setError("Failed to load production records");
+			} finally {
+				setIsLoading(false);
 			}
 		};
 
@@ -150,6 +158,10 @@ function App() {
 				/>
 			</div>
 			<div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
+				{isLoading && <p className="text-gray-500 mb-4">Loading production records...</p>}
+
+				{error && <p className="text-red-600 font-semibold mb-4">{error}</p>}
+
 				<ProductionTable
 					records={records}
 					handleDelete={handleDelete}
