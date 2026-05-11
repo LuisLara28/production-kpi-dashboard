@@ -10,6 +10,9 @@ import ProductionChart from "./components/ProductionChart";
 
 import ProductionFilters from "./components/ProductionFilters";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import "./index.css";
 
 function App() {
@@ -43,6 +46,7 @@ function App() {
 				setRecords(response.data);
 			} catch (error) {
 				console.error("Error fetching production records:", error);
+				toast.error("Failed to load production records");
 				setError("Failed to load production records");
 			} finally {
 				setIsLoading(false);
@@ -91,11 +95,14 @@ function App() {
 
 				setRecords(records.map((record) => (record.id === editingRecord.id ? response.data : record)));
 
+				toast.success("Production record updated successfully");
+
 				setEditingRecord(null);
 			} else {
 				const response = await axios.post("http://localhost:3000/api/production-records", payload);
 
 				setRecords([...records, response.data]);
+				toast.success("Production record created successfully");
 			}
 
 			setFormData({
@@ -108,6 +115,7 @@ function App() {
 			});
 		} catch (error) {
 			console.error("Error saving production record:", error);
+			toast.error("Failed to save production record");
 		}
 	};
 
@@ -121,8 +129,10 @@ function App() {
 			await axios.delete(`http://localhost:3000/api/production-records/${id}`);
 
 			setRecords(records.filter((record) => record.id !== id));
+			toast.success("Production record deleted successfully");
 		} catch (error) {
 			console.error("Error deleting production record:", error);
+			toast.error("Failed to delete production record");
 		}
 	};
 
@@ -157,17 +167,22 @@ function App() {
 					handleChange={handleChange}
 				/>
 			</div>
-			<div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
-				{isLoading && <p className="text-gray-500 mb-4">Loading production records...</p>}
-
-				{error && <p className="text-red-600 font-semibold mb-4">{error}</p>}
-
-				<ProductionTable
-					records={records}
-					handleDelete={handleDelete}
-					handleEdit={handleEdit}
-				/>
-			</div>
+			{isLoading ?
+				<p className="text-gray-500 mb-4">Loading production records...</p>
+			: error ?
+				<p className="text-red-600 font-semibold mb-4">{error}</p>
+			:	<div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
+					<ProductionTable
+						records={records}
+						handleDelete={handleDelete}
+						handleEdit={handleEdit}
+					/>
+				</div>
+			}
+			<ToastContainer
+				position="top-right"
+				autoClose={3000}
+			/>
 		</div>
 	);
 }
