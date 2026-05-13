@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
+    url      = env("DATABASE_URL")
 }
 
 model ProductionRecord {
@@ -15,4 +16,14 @@ model ProductionRecord {
   plannedQty  Int
   actualQty   Int
   createdAt   DateTime @default(now())
+}
+
+model DowntimeRecord {
+  id         Int      @id @default(autoincrement())
+  date       String
+  shift      String
+  line       String
+  cause      String
+  minutes    Int
+  createdAt  DateTime @default(now())
 }
