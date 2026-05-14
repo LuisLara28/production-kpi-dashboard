@@ -10,6 +10,11 @@ import ProductionChart from "./components/ProductionChart";
 
 import ProductionFilters from "./components/ProductionFilters";
 
+import DowntimeForm from "./components/DowntimeForm";
+import DowntimeTable from "./components/DowntimeTable";
+import DowntimeKPICards from "./components/DowntimeKPICards";
+import DowntimeChart from "./components/DowntimeChart";
+
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,6 +22,7 @@ import "./index.css";
 
 function App() {
 	const [records, setRecords] = useState([]);
+	const [downtimeRecords, setDowntimeRecords] = useState([]);
 	const [formData, setFormData] = useState({
 		date: "",
 		shift: "",
@@ -24,6 +30,13 @@ function App() {
 		product: "",
 		plannedQty: "",
 		actualQty: "",
+	});
+	const [downtimeFormData, setDowntimeFormData] = useState({
+		date: "",
+		shift: "",
+		line: "",
+		cause: "",
+		minutes: "",
 	});
 	const [filters, setFilters] = useState({
 		line: "",
@@ -53,12 +66,30 @@ function App() {
 			}
 		};
 
+		const fetchDowntimeRecords = async () => {
+			try {
+				const response = await axios.get("http://localhost:3000/api/downtime-records");
+
+				setDowntimeRecords(response.data);
+			} catch (error) {
+				console.error("Error fetching downtime records:", error);
+			}
+		};
+
 		fetchRecords();
+		fetchDowntimeRecords();
 	}, [filters]);
 
 	const handleChange = (e) => {
 		setFormData({
 			...formData,
+			[e.target.name]: e.target.value,
+		});
+	};
+
+	const handleDowntimeChange = (e) => {
+		setDowntimeFormData({
+			...downtimeFormData,
 			[e.target.name]: e.target.value,
 		});
 	};
@@ -116,6 +147,35 @@ function App() {
 		} catch (error) {
 			console.error("Error saving production record:", error);
 			toast.error("Failed to save production record");
+		}
+	};
+
+	const handleDowntimeSubmit = async (e) => {
+		e.preventDefault();
+
+		try {
+			const payload = {
+				...downtimeFormData,
+				minutes: Number(downtimeFormData.minutes),
+			};
+
+			const response = await axios.post("http://localhost:3000/api/downtime-records", payload);
+
+			setDowntimeRecords([...downtimeRecords, response.data]);
+
+			setDowntimeFormData({
+				date: "",
+				shift: "",
+				line: "",
+				cause: "",
+				minutes: "",
+			});
+
+			toast.success("Downtime record created successfully");
+		} catch (error) {
+			console.error(error);
+
+			toast.error("Failed to create downtime record");
 		}
 	};
 
@@ -179,6 +239,29 @@ function App() {
 					/>
 				</div>
 			}
+			<div className="mt-12">
+				<h1 className="text-4xl font-bold text-gray-800 mb-8">Downtime Dashboard</h1>
+
+				<DowntimeKPICards downtimeRecords={downtimeRecords} />
+
+				<div className="bg-white rounded-xl shadow-md p-6 mb-8">
+					<DowntimeChart downtimeRecords={downtimeRecords} />
+				</div>
+
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+					<div className="lg:col-span-1 bg-white rounded-xl shadow-md p-6">
+						<DowntimeForm
+							downtimeFormData={downtimeFormData}
+							handleDowntimeChange={handleDowntimeChange}
+							handleDowntimeSubmit={handleDowntimeSubmit}
+						/>
+					</div>
+
+					<div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
+						<DowntimeTable downtimeRecords={downtimeRecords} />
+					</div>
+				</div>
+			</div>
 			<ToastContainer
 				position="top-right"
 				autoClose={3000}
